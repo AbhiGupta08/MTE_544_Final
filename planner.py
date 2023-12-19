@@ -39,7 +39,7 @@ class planner:
         #TODO Remember to initialize the rrt_star
         self.rrt_star = RRTStar(
             start=[0, 0],
-            goal=[9, 7],
+            goal=[10, 10],
             obstacle_list=[],
             rand_area=[-2, 15])
 
@@ -101,7 +101,8 @@ class planner:
         
         # self.rrt_star.start = startPoseCart
         # self.rrt_star.goal = endPoseCart
-        self.rrt_star.obstacle_list = obstacle_list2
+        # self.rrt_star.obstacle_list = obstacle_list2
+        self.rrt_star.obstacle_list = obstacle_list1
         # self.rrt_star.expand_dis = 4/scale_factor
 
         path = self.rrt_star.planning()

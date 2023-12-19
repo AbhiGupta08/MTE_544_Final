@@ -64,11 +64,11 @@ class RRTStar(RRT):
                  goal,
                  obstacle_list,
                  rand_area,
-                 expand_dis=5.0,
+                 expand_dis=7.5,
                  path_resolution=1.0,
-                 goal_sample_rate=20,
+                 goal_sample_rate=10,
                  max_iter=5000,
-                 connect_circle_dist=30.0,
+                 connect_circle_dist=20.0,
                  search_until_max_iter=False,
                  robot_radius=0.8):
         """
@@ -347,8 +347,8 @@ def main():
         start=[0, 0],
         goal=[15, 14],
         rand_area=[-2, 15],
-        # obstacle_list=obstacle_list1,
-        obstacle_list=obstacle_list2,
+        obstacle_list=obstacle_list1,
+        # obstacle_list=obstacle_list2,
         # expand_dis=1,
         robot_radius=0.8)
     
