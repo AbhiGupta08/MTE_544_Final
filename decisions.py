@@ -7,7 +7,7 @@ from rclpy import init, spin, spin_once
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 
-from rclpy.qos import QoSProfile
+from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
 from nav_msgs.msg import Odometry as odom
 
 from localization import localization, rawSensors, kalmanFilter
@@ -42,7 +42,7 @@ class decision_maker(Node):
 
 
         self.localizer=localization(rawSensors)
-
+        # self.localizer=localization(kalmanFilter)
 
         self.goal = None
 
@@ -78,9 +78,10 @@ class decision_maker(Node):
             print("waiting for odom msgs ....")
             return
         
+        # self.goal=self.planner.plan([self.localizer.getPose()[0], self.localizer.getPose()[1]],
+        #                              [msg.pose.position.x, msg.pose.position.y])
         self.goal=self.planner.plan([self.localizer.getPose()[0], self.localizer.getPose()[1]],
-                                     [msg.pose.position.x, msg.pose.position.y])
-
+                                      [6, 12]) # TUNE GOAL
     
     def timerCallback(self):
         
@@ -158,14 +159,17 @@ def main(args=None):
     
     init()
     
-    odom_qos=QoSProfile(reliability=2, durability=2, history=1, depth=10)
-    
+    # odom_qos=QoSProfile(reliability=2, durability=2, history=1, depth=10)
+    odom_qos=QoSProfile(reliability=ReliabilityPolicy.RELIABLE, durability=DurabilityPolicy.VOLATILE, history=1, depth=10)
+
     if args.motion == "point":
-        DM=decision_maker(Twist, "/cmd_vel", 10, motion_type=POINT_PLANNER)
-    elif args.motion == "trajectory":
-        DM=decision_maker(Twist, "/cmd_vel", 10, motion_type=TRAJECTORY_PLANNER)
+        DM=decision_maker(Twist, "/cmd_vel", qos_publisher=odom_qos, rate=10, motion_type=POINT_PLANNER)
+    # elif args.motion == "trajectory":
+    elif args.motion == "rrtstar":
+        DM=decision_maker(Twist, "/cmd_vel", qos_publisher=odom_qos, rate=10, motion_type=RRT_STAR_PLANNER)
     else:
-        print("invalid motion type", file=sys.stderr)
+        DM=decision_maker(Twist, "/cmd_vel", qos_publisher=odom_qos, rate=10, motion_type=RRT_STAR_PLANNER)
+        # print("invalid motion type", file=sys.stderr)
 
 
     

@@ -9,7 +9,7 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 
 
-from rclpy.qos import QoSProfile
+from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
 from nav_msgs.msg import Odometry as odom
 
 from sensor_msgs.msg import Imu
@@ -22,7 +22,7 @@ import message_filters
 
 rawSensors=0; kalmanFilter=1
 
-odom_qos=QoSProfile(reliability=2, durability=2, history=1, depth=10)
+odom_qos=QoSProfile(reliability=ReliabilityPolicy.RELIABLE, durability=DurabilityPolicy.VOLATILE, history=1, depth=10)
 
 
 class localization(Node):
@@ -68,8 +68,21 @@ class localization(Node):
                         0,
                         0])        
 
-            Q=0.1*np.eye(6)
-            R=0.4*np.eye(4)
+            # Q=0.1*np.eye(6)
+            # R=0.4*np.eye(4)
+            # Q and R covariance matrices from previous labs
+            Q=np.array([#x      y       th      w       v       vdot
+                      [0.005, 0,      0,      0,      0,      0],
+                      [0,     0.005,  0,      0,      0,      0],
+                      [0,     0,      0.005,  0,      0,      0],
+                      [0,     0,      0,      0.07,   0,      0],
+                      [0,     0,      0,      0,      0.07,   0],
+                      [0,     0,      0,      0,      0,      0.9]])
+            R=np.array([#v      w       ax  ay
+                      [0.1,  0,      0,  0],
+                      [0,     0.1,   0,  0],
+                      [0,     0,      1.8,0],
+                      [0,     0,      0,  1.2]])
             P=Q.copy()
             
             self.kf=kalman_filter(P,Q,R, x)

@@ -206,7 +206,7 @@ class RRT:
                      "-k")
 
         plt.plot(self.start.x, self.start.y, "xr")
-        plt.plot(self.end.x, self.end.y, "xr")
+        plt.plot(self.end.x, self.end.y, "xg")
         plt.axis("equal")
         plt.axis([-2, 15, -2, 15])
         plt.grid(True)
